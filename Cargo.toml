@@ -1,0 +1,6 @@
+[workspace]
+
+members = [
+    "swagger",
+    "swagger_derive",
+]
