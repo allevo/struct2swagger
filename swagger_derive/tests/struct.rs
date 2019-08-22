@@ -43,14 +43,14 @@ fn test_2() {
     let tokens = proc_macro2::TokenStream::from_iter(tokens.into_iter());
     let q = quote! {
         impl JsonSchemaDefinition for MyStructName {
-            fn get_schema_type() -> serde_json::Value {
+            fn get_json_schema_definition() -> serde_json::Value {
                 json! #tokens;
             }
         }
     };
     let s = q.to_string();
 
-    assert_eq!(s, "impl JsonSchemaDefinition for MyStructName { fn get_schema_type ( ) -> serde_json :: Value { json ! ( { } ) ; } }");
+    assert_eq!(s, "impl JsonSchemaDefinition for MyStructName { fn get_json_schema_definition ( ) -> serde_json :: Value { json ! ( { } ) ; } }");
 }
 
 #[test]
@@ -75,7 +75,7 @@ struct SimpleStruct {
 
 #[test]
 fn simple_struct() {
-    let t = SimpleStruct::get_schema_type();
+    let t = SimpleStruct::get_json_schema_definition();
 
     assert_eq!(
         t,
@@ -106,7 +106,7 @@ struct StructWithArrays {
 
 #[test]
 fn struct_with_arrays() {
-    let t = StructWithArrays::get_schema_type();
+    let t = StructWithArrays::get_json_schema_definition();
 
     assert_eq!(
         t,
@@ -157,7 +157,7 @@ struct StructWithOption {
 
 #[test]
 fn struct_with_option() {
-    let t = StructWithOption::get_schema_type();
+    let t = StructWithOption::get_json_schema_definition();
 
     assert_eq!(
         t,
@@ -199,7 +199,7 @@ struct StructWithStruct {
 
 #[test]
 fn struct_with_struct() {
-    let t = StructWithStruct::get_schema_type();
+    let t = StructWithStruct::get_json_schema_definition();
 
     assert_eq!(
         t,

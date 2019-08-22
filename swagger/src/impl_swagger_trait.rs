@@ -62,7 +62,7 @@ fn get_json_schema_definition(
         properties.push(TokenTree::Punct(Punct::new(':', Spacing::Joint)));
 
         properties.push(TokenTree::Ident(Ident::new(
-            "get_schema_type",
+            "get_json_schema_definition",
             Span::call_site(),
         )));
 
@@ -105,7 +105,7 @@ pub fn implements_swagger_trait(input: proc_macro2::TokenStream) -> proc_macro2:
 
     let q = quote! {
         impl JsonSchemaDefinition for #struct_name_ident {
-            fn get_schema_type() -> serde_json::Value {
+            fn get_json_schema_definition() -> serde_json::Value {
                 json!({
                     "id": #struct_name_literal,
                     "type": "object",
@@ -127,7 +127,7 @@ pub fn implements_swagger_trait(input: proc_macro2::TokenStream) -> proc_macro2:
 
     let im = quote! {
         impl JsonSchemaDefinition for MyStructName {
-            fn get_schema_type() -> serde_json::Value {
+            fn get_json_schema_definition() -> serde_json::Value {
                 json! #json_schema;
             }
         }
@@ -145,7 +145,7 @@ mod tests {
     use crate::Field;
 
     #[test]
-    fn get_schema_type_u8() {
+    fn get_json_schema_definition_u8() {
         let expanded = quote!(
             struct MyStructName1 {
                 val1: u8,

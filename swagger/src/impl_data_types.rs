@@ -3,7 +3,7 @@ use crate::JsonSchemaDefinition;
 macro_rules! impl_json_schema_definition {
     ($rt:ty, "integer", $min:expr, $max:expr) => {
         impl JsonSchemaDefinition for $rt {
-            fn get_schema_type() -> serde_json::Value {
+            fn get_json_schema_definition() -> serde_json::Value {
                 json!({
                     "type": "integer",
                     "minimum": $min,
@@ -14,7 +14,7 @@ macro_rules! impl_json_schema_definition {
     };
     ($rt:ty, "number", $min:expr, $max:expr) => {
         impl JsonSchemaDefinition for $rt {
-            fn get_schema_type() -> serde_json::Value {
+            fn get_json_schema_definition() -> serde_json::Value {
                 json!({
                     "type": "number",
                     "minimum": $min,
@@ -25,7 +25,7 @@ macro_rules! impl_json_schema_definition {
     };
     ($rt:ty, "boolean") => {
         impl JsonSchemaDefinition for $rt {
-            fn get_schema_type() -> serde_json::Value {
+            fn get_json_schema_definition() -> serde_json::Value {
                 json!({
                     "type": "boolean"
                 })
@@ -34,7 +34,7 @@ macro_rules! impl_json_schema_definition {
     };
     ($rt:ty, "string") => {
         impl JsonSchemaDefinition for $rt {
-            fn get_schema_type() -> serde_json::Value {
+            fn get_json_schema_definition() -> serde_json::Value {
                 json!({
                     "type": "string",
                 })
@@ -43,7 +43,7 @@ macro_rules! impl_json_schema_definition {
     };
     ($rt:ty, "array", "integer", $min:expr, $max:expr) => {
         impl JsonSchemaDefinition for $rt {
-            fn get_schema_type() -> serde_json::Value {
+            fn get_json_schema_definition() -> serde_json::Value {
                 json!({
                     "type": "array",
                     "items": {
@@ -103,16 +103,16 @@ impl_json_schema_definition!(
 );
 
 impl<T: JsonSchemaDefinition> JsonSchemaDefinition for Option<T> {
-    fn get_schema_type() -> serde_json::Value {
-        <T>::get_schema_type()
+    fn get_json_schema_definition() -> serde_json::Value {
+        <T>::get_json_schema_definition()
     }
 }
 
 impl<T: JsonSchemaDefinition> JsonSchemaDefinition for Vec<T> {
-    fn get_schema_type() -> serde_json::Value {
+    fn get_json_schema_definition() -> serde_json::Value {
         json!({
             "type": "array",
-            "items": T::get_schema_type(),
+            "items": T::get_json_schema_definition(),
         })
     }
 }
@@ -130,13 +130,13 @@ mod tests {
 
     macro_rules! test {
         ($rt:ty, $expected: expr) => {
-            let actual = <$rt>::get_schema_type();
+            let actual = <$rt>::get_json_schema_definition();
             assert_eq!(actual, $expected);
         };
     }
 
     #[test]
-    fn get_schema_type_u8() {
+    fn get_json_schema_definition_u8() {
         test!(
             u8,
             json!({
@@ -148,7 +148,7 @@ mod tests {
     }
 
     #[test]
-    fn get_schema_type_i8() {
+    fn get_json_schema_definition_i8() {
         test!(
             i8,
             json!({
@@ -160,7 +160,7 @@ mod tests {
     }
 
     #[test]
-    fn get_schema_type_f32() {
+    fn get_json_schema_definition_f32() {
         test!(
             f32,
             json!({
@@ -172,7 +172,7 @@ mod tests {
     }
 
     #[test]
-    fn get_schema_type_f64() {
+    fn get_json_schema_definition_f64() {
         test!(
             f64,
             json!({
@@ -184,7 +184,7 @@ mod tests {
     }
 
     #[test]
-    fn get_schema_type_boolean() {
+    fn get_json_schema_definition_boolean() {
         test!(
             bool,
             json!({
@@ -194,7 +194,7 @@ mod tests {
     }
 
     #[test]
-    fn get_schema_type_string() {
+    fn get_json_schema_definition_string() {
         test!(
             String,
             json!({
@@ -204,7 +204,7 @@ mod tests {
     }
 
     #[test]
-    fn get_schema_type_str() {
+    fn get_json_schema_definition_str() {
         test!(
             &str,
             json!({
@@ -214,7 +214,7 @@ mod tests {
     }
 
     #[test]
-    fn get_schema_type_option() {
+    fn get_json_schema_definition_option() {
         test!(
             Option<String>,
             json!({

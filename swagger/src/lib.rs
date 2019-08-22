@@ -24,5 +24,8 @@ struct Field {
 }
 
 pub trait JsonSchemaDefinition {
-    fn get_schema_type() -> serde_json::Value;
+    fn get_json_schema_definition() -> serde_json::Value;
+}
+pub trait QueryDefinition {
+    fn get_query_type() -> serde_json::Value;
 }
