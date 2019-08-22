@@ -14,26 +14,28 @@ struct SimpleStruct {
     val2: String,
 }
 
-
 #[test]
 fn simple_struct() {
     let t = SimpleStruct::get_schema_type();
 
-    assert_eq!(t, json!({
-        "id":"SimpleStruct",
-        "properties": {
-            "val1": {
-                "maximum":255,
-                "minimum":0,
-                "type":"integer",
+    assert_eq!(
+        t,
+        json!({
+            "id":"SimpleStruct",
+            "properties": {
+                "val1": {
+                    "maximum":255,
+                    "minimum":0,
+                    "type":"integer",
+                },
+                "val2": {
+                    "type":"string",
+                }
             },
-            "val2": {
-                "type":"string",
-            }
-        },
-        "required":["val1","val2"],
-        "type":"object",
-    }));
+            "required":["val1","val2"],
+            "type":"object",
+        })
+    );
 }
 
 #[derive(Swagger)]
@@ -46,42 +48,45 @@ struct StructWithArrays {
 #[test]
 fn struct_with_arrays() {
     let t = StructWithArrays::get_schema_type();
-    
-    assert_eq!(t, json!({
-        "id":"StructWithArrays",
-        "properties": {
-            "val1": {
-                "type": "array",
-                "items": {
-                    "maximum":255,
-                    "minimum":0,
-                    "type":"integer",
+
+    assert_eq!(
+        t,
+        json!({
+            "id":"StructWithArrays",
+            "properties": {
+                "val1": {
+                    "type": "array",
+                    "items": {
+                        "maximum":255,
+                        "minimum":0,
+                        "type":"integer",
+                    },
                 },
-            },
-            "val2": {
-                "type": "array",
-                "items": {
-                    "type":"string",
+                "val2": {
+                    "type": "array",
+                    "items": {
+                        "type":"string",
+                    },
                 },
-            },
-            "val3": {
-                "type": "array",
-                "items": {
+                "val3": {
                     "type": "array",
                     "items": {
                         "type": "array",
                         "items": {
-                            "maximum":255,
-                            "minimum":0,
-                            "type":"integer",
+                            "type": "array",
+                            "items": {
+                                "maximum":255,
+                                "minimum":0,
+                                "type":"integer",
+                            },
                         },
                     },
                 },
             },
-        },
-        "required":["val1", "val2", "val3"],
-        "type":"object",
-    }));
+            "required":["val1", "val2", "val3"],
+            "type":"object",
+        })
+    );
 }
 
 #[derive(Swagger)]
@@ -95,28 +100,30 @@ struct StructWithOption {
 fn struct_with_option() {
     let t = StructWithOption::get_schema_type();
 
-    assert_eq!(t, json!({
-        "id":"StructWithOption",
-        "properties": {
-            "val1": {
-                "maximum":255,
-                "minimum":0,
-                "type":"integer",
+    assert_eq!(
+        t,
+        json!({
+            "id":"StructWithOption",
+            "properties": {
+                "val1": {
+                    "maximum":255,
+                    "minimum":0,
+                    "type":"integer",
+                },
+                "val2": {
+                    "maximum":255,
+                    "minimum":0,
+                    "type":"integer",
+                },
+                "val3": {
+                    "type":"string",
+                },
             },
-            "val2": {
-                "maximum":255,
-                "minimum":0,
-                "type":"integer",
-            },
-            "val3": {
-                "type":"string",
-            },
-        },
-        "required":["val1"],
-        "type":"object",
-    }));
+            "required":["val1"],
+            "type":"object",
+        })
+    );
 }
-
 
 #[derive(Swagger)]
 struct MySubStruct {
@@ -135,32 +142,17 @@ struct StructWithStruct {
 fn struct_with_struct() {
     let t = StructWithStruct::get_schema_type();
 
-    assert_eq!(t, json!({
-        "id":"StructWithStruct",
-        "properties": {
-            "val1": {
-                "maximum":255,
-                "minimum":0,
-                "type":"integer",
-            },
-            "val2": {
-                "id": "MySubStruct",
-                "type": "object",
-                "properties": {
-                    "val1": {
-                        "maximum":255,
-                        "minimum":0,
-                        "type":"integer",
-                    },
-                    "val2": {
-                        "type": "string",
-                    },
+    assert_eq!(
+        t,
+        json!({
+            "id":"StructWithStruct",
+            "properties": {
+                "val1": {
+                    "maximum":255,
+                    "minimum":0,
+                    "type":"integer",
                 },
-                "required": ["val1", "val2"],
-            },
-            "val3": {
-                "type":"array",
-                "items": {
+                "val2": {
                     "id": "MySubStruct",
                     "type": "object",
                     "properties": {
@@ -175,9 +167,27 @@ fn struct_with_struct() {
                     },
                     "required": ["val1", "val2"],
                 },
+                "val3": {
+                    "type":"array",
+                    "items": {
+                        "id": "MySubStruct",
+                        "type": "object",
+                        "properties": {
+                            "val1": {
+                                "maximum":255,
+                                "minimum":0,
+                                "type":"integer",
+                            },
+                            "val2": {
+                                "type": "string",
+                            },
+                        },
+                        "required": ["val1", "val2"],
+                    },
+                },
             },
-        },
-        "required":["val1", "val2", "val3"],
-        "type":"object",
-    }));
+            "required":["val1", "val2", "val3"],
+            "type":"object",
+        })
+    );
 }

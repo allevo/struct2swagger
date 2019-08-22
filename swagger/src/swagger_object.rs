@@ -1,15 +1,14 @@
-
 use std::collections::HashMap;
 
 use serde::{Serialize, Serializer};
-use serde_json::Value;
 
 pub enum SwaggerVersion {
     V2,
 }
 impl Serialize for SwaggerVersion {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-        where S: Serializer
+    where
+        S: Serializer,
     {
         serializer.serialize_str(match *self {
             SwaggerVersion::V2 => "2.0",
@@ -32,16 +31,14 @@ pub struct TagObject {
 
 pub type SchemaObject = serde_json::Value;
 
-#[derive(Clone)]
-#[derive(Serialize)]
+#[derive(Clone, Serialize)]
 pub struct ResponseObject {
     description: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     schema: Option<SchemaObject>,
 }
 
-#[derive(Clone)]
-#[derive(Serialize)]
+#[derive(Clone, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum ParameterIn {
     Path,
@@ -49,8 +46,7 @@ pub enum ParameterIn {
     Query,
 }
 
-#[derive(Clone)]
-#[derive(Serialize)]
+#[derive(Clone, Serialize)]
 pub struct ParameterObject {
     r#in: ParameterIn,
     name: String,
@@ -63,8 +59,7 @@ pub struct ParameterObject {
     schema: Option<SchemaObject>,
 }
 
-#[derive(Clone)]
-#[derive(Serialize)]
+#[derive(Clone, Serialize)]
 pub struct MethodObject {
     tags: Vec<String>,
     summary: String,
@@ -85,7 +80,8 @@ pub enum SwaggerMethod {
 }
 impl Serialize for SwaggerMethod {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-        where S: Serializer
+    where
+        S: Serializer,
     {
         serializer.serialize_str(match *self {
             SwaggerMethod::GET => "get",
@@ -105,5 +101,5 @@ pub struct SwaggerObject {
     base_path: String,
     tags: Vec<TagObject>,
     schemes: Vec<String>,
-    paths: HashMap<String, PathObject>
+    paths: HashMap<String, PathObject>,
 }

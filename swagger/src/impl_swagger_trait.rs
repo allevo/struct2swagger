@@ -1,50 +1,50 @@
-
-use syn::{DeriveInput, Data, Fields, Type, PathArguments, GenericArgument};
-use proc_macro2::{TokenStream, Ident, Span, Punct, Spacing, TokenTree, Group, Delimiter, Literal};
-use std::iter::FromIterator;
 use crate::quote::ToTokens;
+use proc_macro2::{Delimiter, Group, Ident, Literal, Punct, Spacing, Span, TokenStream, TokenTree};
+use std::iter::FromIterator;
+use syn::{Data, DeriveInput, Fields};
 
-use crate::{Field};
+use crate::Field;
 
 fn get_fields(ast: &DeriveInput) -> Vec<Field> {
-    let mut tokens = TokenStream::new();
+    match &ast.data {
+        Data::Struct(s) => match &s.fields {
+            Fields::Named(named_fields) => {
+                let mut fields = vec![];
 
-    let fields = match &ast.data {
-        Data::Struct(s) => {
-            match &s.fields {
-                Fields::Named(named_fields) => {
-                    let mut fields = vec![];
+                for field in named_fields.named.iter() {
+                    let field_name: String = field.ident.as_ref().unwrap().to_string().to_owned();
+                    let mut token_stream = TokenStream::new();
+                    field.ty.to_tokens(&mut token_stream);
+                    let field_tokens: Vec<TokenTree> = token_stream.into_iter().collect();
 
-                    for field in named_fields.named.iter() {
+                    fields.push(Field {
+                        name: field_name,
+                        ty: field_tokens,
+                    });
+                }
 
-                        let field_name: String = field.ident.as_ref().unwrap().to_string().to_owned();
-                        let mut token_stream = TokenStream::new();
-                        field.ty.to_tokens(&mut token_stream);
-                        let field_tokens: Vec<TokenTree> = token_stream.into_iter().collect();
-
-                        fields.push(Field {
-                            name: field_name,
-                            ty: field_tokens,
-                        });
-                    }
-
-                    fields
-                },
-                _ => unimplemented!("Only named struct is implemented. Please send PR!"),
+                fields
             }
+            _ => unimplemented!("Only named struct is implemented. Please send PR!"),
         },
         _ => unimplemented!("Only struct is implemented. Please send PR!"),
-    };
-
-    fields
+    }
 }
-
 
 fn get_struct_name(ast: &DeriveInput) -> String {
     ast.ident.to_string()
 }
 
-fn get_json_schema_definition(fields: &Vec<Field>) -> (proc_macro2::TokenStream, proc_macro2::TokenStream) {
+fn contains_option(tt: &[TokenTree]) -> bool {
+    tt.iter().any(|t| match t {
+        TokenTree::Ident(ident) => *ident == "Option",
+        _ => false,
+    })
+}
+
+fn get_json_schema_definition(
+    fields: &[Field],
+) -> (proc_macro2::TokenStream, proc_macro2::TokenStream) {
     let mut tokens = Vec::new();
 
     let mut properties = Vec::new();
@@ -61,9 +61,15 @@ fn get_json_schema_definition(fields: &Vec<Field>) -> (proc_macro2::TokenStream,
         properties.push(TokenTree::Punct(Punct::new(':', Spacing::Joint)));
         properties.push(TokenTree::Punct(Punct::new(':', Spacing::Joint)));
 
-        properties.push(TokenTree::Ident(Ident::new("get_schema_type", Span::call_site())));
+        properties.push(TokenTree::Ident(Ident::new(
+            "get_schema_type",
+            Span::call_site(),
+        )));
 
-        properties.push(TokenTree::Group(Group::new(Delimiter::Parenthesis, proc_macro2::TokenStream::new())));
+        properties.push(TokenTree::Group(Group::new(
+            Delimiter::Parenthesis,
+            proc_macro2::TokenStream::new(),
+        )));
 
         properties.push(TokenTree::Punct(Punct::new(',', Spacing::Alone)));
     }
@@ -74,12 +80,9 @@ fn get_json_schema_definition(fields: &Vec<Field>) -> (proc_macro2::TokenStream,
 
     let mut required_properties: Vec<TokenTree> = Vec::new();
     for field in fields {
-        if field.ty.iter().find(|t| {
-            match t {
-                TokenTree::Ident(ident) => ident.to_string() == "Option",
-                _ => false,
-            }
-        }).is_some() {
+        let has_option = contains_option(&field.ty);
+
+        if has_option {
             continue;
         }
         required_properties.push(TokenTree::Literal(Literal::string(&field.name)));
@@ -113,9 +116,7 @@ pub fn implements_swagger_trait(input: proc_macro2::TokenStream) -> proc_macro2:
         }
     };
 
-
     q
-
 
     // input
 
@@ -138,8 +139,6 @@ pub fn implements_swagger_trait(input: proc_macro2::TokenStream) -> proc_macro2:
     // input
 }
 
-
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -161,32 +160,35 @@ mod tests {
         let fields = get_fields(&ast);
         let impl_json_schema_definition = get_json_schema_definition(&fields);
 
-        assert_eq!(fields, vec![
-            Field {
-                name: "val1".to_owned(),
-                ty: vec![],
-            },
-            Field {
-                name: "val2".to_owned(),
-                ty: vec![],
-            },
-            Field {
-                name: "val3".to_owned(),
-                ty: vec![],
-            },
-            /*
-            Field {
-                name: "val4".to_owned(),
-                field_type: "::Vec".to_owned(),
-                generic_type: Some("String".to_owned()),
-            },
-            Field {
-                name: "val5".to_owned(),
-                field_type: "::std::Vec".to_owned(),
-                generic_type: Some("u8".to_owned()),
-            },
-            */
-        ]);
+        assert_eq!(
+            fields,
+            vec![
+                Field {
+                    name: "val1".to_owned(),
+                    ty: vec![],
+                },
+                Field {
+                    name: "val2".to_owned(),
+                    ty: vec![],
+                },
+                Field {
+                    name: "val3".to_owned(),
+                    ty: vec![],
+                },
+                /*
+                Field {
+                    name: "val4".to_owned(),
+                    field_type: "::Vec".to_owned(),
+                    generic_type: Some("String".to_owned()),
+                },
+                Field {
+                    name: "val5".to_owned(),
+                    field_type: "::std::Vec".to_owned(),
+                    generic_type: Some("u8".to_owned()),
+                },
+                */
+            ]
+        );
 
         // assert_eq!(impl_json_schema_definition.to_string(), "");
     }
