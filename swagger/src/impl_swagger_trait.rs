@@ -101,95 +101,16 @@ pub fn implements_swagger_trait(input: proc_macro2::TokenStream) -> proc_macro2:
     let (required_properties, tokens) = get_json_schema_definition(&fields);
 
     let struct_name_ident = TokenTree::Ident(Ident::new(&struct_name, Span::call_site()));
-    let struct_name_literal = TokenTree::Literal(Literal::string(&struct_name));
 
-    let q = quote! {
+    quote! {
         impl JsonSchemaDefinition for #struct_name_ident {
             fn get_json_schema_definition() -> serde_json::Value {
                 json!({
-                    "id": #struct_name_literal,
                     "type": "object",
                     "required": [ #required_properties ],
                     "properties": #tokens,
                 })
             }
         }
-    };
-
-    q
-
-    // input
-
-    /*
-    let ast = syn::parse2(input.clone()).unwrap();
-    let fields = get_fields(ast);
-    let json_schema = proc_macro2::TokenStream::from_iter(get_json_schema_definition(&fields));
-
-    let im = quote! {
-        impl JsonSchemaDefinition for MyStructName {
-            fn get_json_schema_definition() -> serde_json::Value {
-                json! #json_schema;
-            }
-        }
-    };
-
-    im
-    */
-    // proc_macro2::TokenStream::new()
-    // input
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::Field;
-
-    #[test]
-    fn get_json_schema_definition_u8() {
-        let expanded = quote!(
-            struct MyStructName1 {
-                val1: u8,
-                val2: String,
-                val3: Vec<u8>,
-                // val4: Vec<String>,
-                // val5: std::Vec<u8>,
-            }
-        );
-        let input = TokenStream::from(expanded);
-        let ast = syn::parse2(input).unwrap();
-        let fields = get_fields(&ast);
-        let impl_json_schema_definition = get_json_schema_definition(&fields);
-
-        assert_eq!(
-            fields,
-            vec![
-                Field {
-                    name: "val1".to_owned(),
-                    ty: vec![],
-                },
-                Field {
-                    name: "val2".to_owned(),
-                    ty: vec![],
-                },
-                Field {
-                    name: "val3".to_owned(),
-                    ty: vec![],
-                },
-                /*
-                Field {
-                    name: "val4".to_owned(),
-                    field_type: "::Vec".to_owned(),
-                    generic_type: Some("String".to_owned()),
-                },
-                Field {
-                    name: "val5".to_owned(),
-                    field_type: "::std::Vec".to_owned(),
-                    generic_type: Some("u8".to_owned()),
-                },
-                */
-            ]
-        );
-
-        // assert_eq!(impl_json_schema_definition.to_string(), "");
     }
 }

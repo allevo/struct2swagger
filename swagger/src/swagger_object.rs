@@ -18,24 +18,24 @@ impl Serialize for SwaggerVersion {
 
 #[derive(Serialize)]
 pub struct InfoObject {
-    description: String,
-    version: String,
-    title: String,
+    pub description: String,
+    pub version: String,
+    pub title: String,
 }
 
 #[derive(Serialize)]
 pub struct TagObject {
-    name: String,
-    description: String,
+    pub name: String,
+    pub description: String,
 }
 
 pub type SchemaObject = serde_json::Value;
 
 #[derive(Clone, Serialize)]
 pub struct ResponseObject {
-    description: String,
+    pub description: String,
     #[serde(skip_serializing_if = "Option::is_none")]
-    schema: Option<SchemaObject>,
+    pub schema: Option<SchemaObject>,
 }
 
 #[derive(Clone, Serialize)]
@@ -48,29 +48,29 @@ pub enum ParameterIn {
 
 #[derive(Clone, Serialize)]
 pub struct ParameterObject {
-    r#in: ParameterIn,
-    name: String,
-    description: String,
-    r#type: String,
-    required: bool,
+    pub r#in: ParameterIn,
+    pub name: String,
+    pub description: String,
+    pub r#type: String,
+    pub required: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
-    format: Option<String>,
+    pub format: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    schema: Option<SchemaObject>,
+    pub schema: Option<SchemaObject>,
 }
 
 #[derive(Clone, Serialize)]
 pub struct MethodObject {
-    tags: Vec<String>,
-    summary: String,
-    description: String,
+    pub tags: Vec<String>,
+    pub summary: String,
+    pub description: String,
     #[serde(skip_serializing_if = "Option::is_none")]
-    consumes: Option<Vec<String>>,
+    pub consumes: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    produces: Option<Vec<String>>,
+    pub produces: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
-    parameters: Vec<ParameterObject>,
-    responses: HashMap<u8, ResponseObject>,
+    pub parameters: Vec<ParameterObject>,
+    pub responses: HashMap<u8, ResponseObject>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
@@ -95,11 +95,48 @@ pub type PathObject = HashMap<SwaggerMethod, MethodObject>;
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SwaggerObject {
-    swagger: SwaggerVersion,
-    info: InfoObject,
-    host: String,
-    base_path: String,
-    tags: Vec<TagObject>,
-    schemes: Vec<String>,
-    paths: HashMap<String, PathObject>,
+    pub swagger: SwaggerVersion,
+    pub info: InfoObject,
+    pub host: String,
+    pub base_path: String,
+    pub tags: Vec<TagObject>,
+    pub schemes: Vec<String>,
+    pub paths: HashMap<String, PathObject>,
+}
+
+impl SwaggerObject {
+    pub fn add_route(
+        self: &mut Self,
+        method: SwaggerMethod,
+        path: String,
+        response_on_200: serde_json::Value,
+    ) {
+        if !self.paths.contains_key(&path) {
+            self.paths.insert(path.clone(), PathObject::new());
+        }
+        let path_object = self.paths.get_mut(&path).unwrap();
+
+        if path_object.contains_key(&method) {
+            unimplemented!("Please send a PR!");
+        }
+
+        let mut responses =  HashMap::new();
+
+        responses.insert(200, ResponseObject {
+            description: "".to_owned(),
+            schema: Some(response_on_200),
+        });
+
+        let method_object = MethodObject {
+            tags: vec![],
+            summary: "".to_owned(),
+            description: "".to_owned(),
+            consumes: None,
+            produces: None,
+            parameters: vec![],
+            responses,
+        };
+
+        path_object.insert(method.clone(), method_object);
+    }
 }

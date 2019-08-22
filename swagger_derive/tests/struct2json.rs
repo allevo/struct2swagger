@@ -80,7 +80,6 @@ fn simple_struct() {
     assert_eq!(
         t,
         json!({
-            "id":"SimpleStruct",
             "properties": {
                 "val1": {
                     "maximum":255,
@@ -111,7 +110,6 @@ fn struct_with_arrays() {
     assert_eq!(
         t,
         json!({
-            "id":"StructWithArrays",
             "properties": {
                 "val1": {
                     "type": "array",
@@ -162,7 +160,6 @@ fn struct_with_option() {
     assert_eq!(
         t,
         json!({
-            "id":"StructWithOption",
             "properties": {
                 "val1": {
                     "maximum":255,
@@ -204,7 +201,6 @@ fn struct_with_struct() {
     assert_eq!(
         t,
         json!({
-            "id":"StructWithStruct",
             "properties": {
                 "val1": {
                     "maximum":255,
@@ -212,7 +208,6 @@ fn struct_with_struct() {
                     "type":"integer",
                 },
                 "val2": {
-                    "id": "MySubStruct",
                     "type": "object",
                     "properties": {
                         "val1": {
@@ -229,7 +224,6 @@ fn struct_with_struct() {
                 "val3": {
                     "type":"array",
                     "items": {
-                        "id": "MySubStruct",
                         "type": "object",
                         "properties": {
                             "val1": {
