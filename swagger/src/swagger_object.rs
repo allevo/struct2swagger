@@ -109,7 +109,7 @@ impl SwaggerObject {
         self: &mut Self,
         method: SwaggerMethod,
         path: String,
-        response_on_200: serde_json::Value,
+        responses: Vec<(u8, (&str, serde_json::Value))>,
     ) {
         if !self.paths.contains_key(&path) {
             self.paths.insert(path.clone(), PathObject::new());
@@ -120,12 +120,18 @@ impl SwaggerObject {
             unimplemented!("Please send a PR!");
         }
 
-        let mut responses =  HashMap::new();
+        let mut swagger_responses: HashMap<u8, ResponseObject> = HashMap::new();
 
-        responses.insert(200, ResponseObject {
-            description: "".to_owned(),
-            schema: Some(response_on_200),
-        });
+        for (status_code, (description, schema)) in responses {
+            let dd: String = description.to_string();
+            swagger_responses.insert(
+                status_code,
+                ResponseObject {
+                    description: dd,
+                    schema: Some(schema.clone()),
+                },
+            );
+        }
 
         let method_object = MethodObject {
             tags: vec![],
@@ -134,7 +140,7 @@ impl SwaggerObject {
             consumes: None,
             produces: None,
             parameters: vec![],
-            responses,
+            responses: swagger_responses,
         };
 
         path_object.insert(method.clone(), method_object);
