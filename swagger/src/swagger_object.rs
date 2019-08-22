@@ -109,6 +109,8 @@ impl SwaggerObject {
         self: &mut Self,
         method: SwaggerMethod,
         path: String,
+        _query_parameter: Option<ParameterObject>,
+        _body_parameter: Option<ParameterObject>,
         responses: Vec<(u8, (&str, serde_json::Value))>,
     ) {
         if !self.paths.contains_key(&path) {

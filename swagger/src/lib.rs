@@ -36,6 +36,8 @@ macro_rules! swagger_add_router {
         $swagger_object.add_route(
             SwaggerMethod::GET,
             String::from($path),
+            None,
+            None,
             vec![(200 as u8, ("", $response::get_json_schema_definition()))],
         )
     };
