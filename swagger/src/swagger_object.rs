@@ -98,6 +98,7 @@ pub enum AnyOrExpression {
 }
 
 #[derive(Serialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct ComponentsObject {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub schemas: Option<HashMap<String, SchemaObjectOrReferenceObject>>,
@@ -112,7 +113,7 @@ pub struct ComponentsObject {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub headers: Option<HashMap<String, HeaderObjectOrReferenceObject>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub securitySchemes: Option<HashMap<String, SecuritySchemeObjectOrReferenceObject>>,
+    pub security_schemes: Option<HashMap<String, SecuritySchemeObjectOrReferenceObject>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub links: Option<HashMap<String, LinkObjectOrReferenceObject>>,
     #[serde(skip_serializing_if = "Option::is_none")]

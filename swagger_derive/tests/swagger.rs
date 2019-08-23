@@ -54,41 +54,37 @@ fn simple_struct() {
     let stringified = serde_json::to_string(&swagger_object).unwrap();
     let values: serde_json::Value = serde_json::from_str(&stringified).unwrap();
 
-    println!("{}", stringified);
+    // println!("{}", stringified);
 
     assert_eq!(values, json!({
-        "swagger":"2.0",
+        "openapi": "3.0.0",
         "info": {
-            "description": "My desc",
-            "version": "1.1.1",
             "title": "the swagger",
+            "version": "1.1.1",
         },
-        "host": "localhost",
-        "basePath": "/",
-        "tags": [],
-        "schemes": ["http"],
         "paths": {
             "/": {
                 "get": {
-                    "tags": [],
-                    "summary":"",
-                    "description":"",
                     "responses": {
                         "200": {
                             "description": "",
-                            "schema": {
-                                "properties": {
-                                    "val1": {
-                                        "maximum": 255,
-                                        "minimum": 0,
-                                        "type": "integer",
-                                    },
-                                    "val2": {
-                                        "type": "string",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "val1": {
+                                                "maximum": 255,
+                                                "minimum": 0,
+                                                "type": "integer",
+                                            },
+                                            "val2": {
+                                                "type": "string",
+                                            },
+                                        },
+                                        "required": [ "val1", "val2" ],
                                     },
                                 },
-                                "required":["val1","val2"],
-                                "type":"object",
                             },
                         },
                     },
