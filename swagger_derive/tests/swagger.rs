@@ -19,7 +19,8 @@ use swagger::swagger_object::{
     SwaggerObject,
     SwaggerVersion,
     InfoObject,
-    SwaggerMethod,
+    PathsObject,
+    PathItemObject,
 };
 
 #[derive(Swagger)]
@@ -31,23 +32,29 @@ struct SimpleStruct {
 #[test]
 fn simple_struct() {
     let mut swagger_object = SwaggerObject {
-        swagger: SwaggerVersion::V2,
+        openapi: SwaggerVersion::V300,
         info: InfoObject {
-            description: "My desc".to_owned(),
-            version: "1.1.1".to_owned(),
             title: "the swagger".to_owned(),
+            version: "1.1.1".to_owned(),
+            description: None,
+            terms_of_service: None,
+            contact: None,
+            license: None,
         },
-        host: "localhost".to_owned(),
-        base_path: "/".to_owned(),
-        tags: vec![],
-        schemes: vec![ "http".to_owned() ],
+        servers: None,
         paths: HashMap::new(),
+        components: None,
+        security: None,
+        tags: None,
+        external_docs: None,
     };
 
     swagger_add_router!(swagger_object, "GET", "/", SimpleStruct);
 
     let stringified = serde_json::to_string(&swagger_object).unwrap();
     let values: serde_json::Value = serde_json::from_str(&stringified).unwrap();
+
+    println!("{}", stringified);
 
     assert_eq!(values, json!({
         "swagger":"2.0",

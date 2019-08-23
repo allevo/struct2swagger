@@ -34,11 +34,13 @@ pub trait QueryDefinition {
 macro_rules! swagger_add_router {
     ($swagger_object:expr, "GET", $path:literal, $response:ident) => {
         $swagger_object.add_route(
-            SwaggerMethod::GET,
+            "GET",
             String::from($path),
             None,
             None,
-            vec![(200 as u8, ("", $response::get_json_schema_definition()))],
+            None,
+            None,
+            vec![(200 as u16, ("", $response::get_json_schema_definition()))],
         )
     };
 }
