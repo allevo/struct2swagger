@@ -1,15 +1,16 @@
 [package]
-name = "swagger"
+name = "struct2swagger_derive"
 version = "0.1.0"
 authors = ["Tommaso Allevi <tomallevi@gmail.com>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[lib]
+proc-macro = true
+
 [dependencies]
 proc-macro2 = "1.0.1"
-syn = { version = "1.0.3", features = ["full"] }
-quote = "1.0.2"
-serde = "1.0.99"
+struct2swagger = { path = "../struct2swagger" }
 serde_json = "1.0.40"
-serde_derive = "1.0.99"
+quote = "1.0.2"

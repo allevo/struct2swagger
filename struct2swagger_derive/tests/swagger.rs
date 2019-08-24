@@ -8,12 +8,12 @@ extern crate proc_macro2;
 extern crate serde_json;
 
 #[macro_use]
-extern crate swagger;
+extern crate struct2swagger;
 #[macro_use]
-extern crate swagger_derive;
+extern crate struct2swagger_derive;
 
-use swagger::swagger_object::SwaggerObject;
-use swagger::JsonSchemaDefinition;
+use struct2swagger::swagger_object::SwaggerObject;
+use struct2swagger::JsonSchemaDefinition;
 
 #[derive(Swagger)]
 struct SimpleStruct {

@@ -9,11 +9,11 @@ extern crate quote;
 use proc_macro2::{Ident, Punct, Spacing, Span, TokenTree};
 use std::iter::FromIterator;
 
-extern crate swagger;
+extern crate struct2swagger;
 #[macro_use]
-extern crate swagger_derive;
+extern crate struct2swagger_derive;
 
-use swagger::JsonSchemaDefinition;
+use struct2swagger::JsonSchemaDefinition;
 
 #[test]
 fn test_1() {

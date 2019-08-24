@@ -57,7 +57,7 @@ macro_rules! swagger_add_router {
         )
     }};
     ($swagger_object:expr, $method:literal, $path:literal, "request_body", $req: ident, 200, $description: expr, $response:ident) => {{
-        use swagger::swagger_object::{
+        use struct2swagger::swagger_object::{
             MediaTypeObject, RequestBodyObject, SchemaObjectOrReferenceObject,
         };
         let mut content_hash_map = HashMap::new();

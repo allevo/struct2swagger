@@ -1,6 +1,6 @@
 [workspace]
 
 members = [
-    "swagger",
-    "swagger_derive",
+    "struct2swagger",
+    "struct2swagger_derive",
 ]
