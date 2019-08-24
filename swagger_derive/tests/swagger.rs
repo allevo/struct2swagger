@@ -15,14 +15,7 @@ extern crate swagger_derive;
 use swagger::{
     JsonSchemaDefinition,
 };
-use swagger::swagger_object::{
-    SwaggerObject,
-    SwaggerVersion,
-    InfoObject,
-    MediaTypeObject,
-    RequestBodyObject,
-    SchemaObjectOrReferenceObject,
-};
+use swagger::swagger_object::SwaggerObject;
 
 #[derive(Swagger)]
 struct SimpleStruct {
@@ -30,27 +23,15 @@ struct SimpleStruct {
     val2: String,
 }
 
+const TITLE: &str = "the title";
+const VERSION: &str = "1.0.1";
+const DESCRIPTION: &str = "the description";
+
 #[test]
 fn with_response() {
-    let mut swagger_object = SwaggerObject {
-        openapi: SwaggerVersion::V300,
-        info: InfoObject {
-            title: "the swagger".to_owned(),
-            version: "1.1.1".to_owned(),
-            description: None,
-            terms_of_service: None,
-            contact: None,
-            license: None,
-        },
-        servers: None,
-        paths: HashMap::new(),
-        components: None,
-        security: None,
-        tags: None,
-        external_docs: None,
-    };
+    let mut swagger_object = SwaggerObject::new(TITLE, VERSION);
 
-    swagger_add_router!(swagger_object, "GET", "/", 200, SimpleStruct);
+    swagger_add_router!(swagger_object, "GET", "/", 200, DESCRIPTION, SimpleStruct);
 
     let stringified = serde_json::to_string(&swagger_object).unwrap();
     let values: serde_json::Value = serde_json::from_str(&stringified).unwrap();
@@ -58,31 +39,18 @@ fn with_response() {
     assert_eq!(values, json!({
         "openapi": "3.0.0",
         "info": {
-            "title": "the swagger",
-            "version": "1.1.1",
+            "title": TITLE,
+            "version": VERSION,
         },
         "paths": {
             "/": {
                 "get": {
                     "responses": {
                         "200": {
-                            "description": "",
+                            "description": DESCRIPTION,
                             "content": {
                                 "application/json": {
-                                    "schema": {
-                                        "type": "object",
-                                        "properties": {
-                                            "val1": {
-                                                "maximum": 255,
-                                                "minimum": 0,
-                                                "type": "integer",
-                                            },
-                                            "val2": {
-                                                "type": "string",
-                                            },
-                                        },
-                                        "required": [ "val1", "val2" ],
-                                    },
+                                    "schema": SimpleStruct::get_json_schema_definition(),
                                 },
                             },
                         },
@@ -96,25 +64,9 @@ fn with_response() {
 
 #[test]
 fn with_body() {
-    let mut swagger_object = SwaggerObject {
-        openapi: SwaggerVersion::V300,
-        info: InfoObject {
-            title: "the swagger".to_owned(),
-            version: "1.1.1".to_owned(),
-            description: None,
-            terms_of_service: None,
-            contact: None,
-            license: None,
-        },
-        servers: None,
-        paths: HashMap::new(),
-        components: None,
-        security: None,
-        tags: None,
-        external_docs: None,
-    };
+    let mut swagger_object = SwaggerObject::new(TITLE, VERSION);
 
-    swagger_add_router!(swagger_object, "POST", "/", "request_body", SimpleStruct, 200, SimpleStruct);
+    swagger_add_router!(swagger_object, "POST", "/", "request_body", SimpleStruct, 200, DESCRIPTION, SimpleStruct);
 
     let stringified = serde_json::to_string(&swagger_object).unwrap();
     let values: serde_json::Value = serde_json::from_str(&stringified).unwrap();
@@ -122,8 +74,8 @@ fn with_body() {
     assert_eq!(values, json!({
         "openapi": "3.0.0",
         "info": {
-            "title": "the swagger",
-            "version": "1.1.1",
+            "title": TITLE,
+            "version": VERSION,
         },
         "paths": {
             "/": {
@@ -131,43 +83,17 @@ fn with_body() {
                     "requestBody": {
                         "content": {
                             "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "val1": {
-                                            "maximum": 255,
-                                            "minimum": 0,
-                                            "type": "integer",
-                                        },
-                                        "val2": {
-                                            "type": "string",
-                                        },
-                                    },
-                                    "required": ["val1","val2"],
-                                    "type":"object",
-                                },
+                                "schema": SimpleStruct::get_json_schema_definition(),
                             },
                         },
                         "required":true,
                     },
                     "responses": {
                         "200": {
-                            "description": "",
+                            "description": DESCRIPTION,
                             "content": {
                                 "application/json": {
-                                    "schema": {
-                                        "properties": {
-                                            "val1": {
-                                                "maximum": 255,
-                                                "minimum": 0,
-                                                "type": "integer",
-                                            },
-                                            "val2": {
-                                                "type": "string",
-                                            },
-                                        },
-                                        "required": ["val1","val2"],
-                                        "type": "object",
-                                    },
+                                    "schema": SimpleStruct::get_json_schema_definition(),
                                 },
                             },
                         },

@@ -426,6 +426,26 @@ pub struct SwaggerObject {
 
 
 impl SwaggerObject {
+    pub fn new(title: &str, version: &str) -> Self {
+        Self {
+            openapi: SwaggerVersion::V300,
+            info: InfoObject {
+                title: title.to_owned(),
+                version: version.to_owned(),
+                description: None,
+                terms_of_service: None,
+                contact: None,
+                license: None,
+            },
+            servers: None,
+            paths: HashMap::new(),
+            components: None,
+            security: None,
+            tags: None,
+            external_docs: None,
+        }
+    }
+
     pub fn add_route(
         self: &mut Self,
         method: &str,
