@@ -32,14 +32,37 @@ pub trait QueryDefinition {
 
 #[macro_export]
 macro_rules! swagger_add_router {
-    ($swagger_object:expr, "GET", $path:literal, $response:ident) => {
+    ($swagger_object:expr, "GET", $path:literal, 200, $response:ident) => {
         $swagger_object.add_route(
             "GET",
             String::from($path),
             None,
             None,
+            vec![(200 as u16, ("", $response::get_json_schema_definition()))],
+        )
+    };
+    ($swagger_object:expr, "POST", $path:literal, "request_body", $req: ident, 200, $response:ident) => {
+        let mut content_hash_map = HashMap::new();
+        content_hash_map.insert(
+            "application/json".to_owned(),
+            MediaTypeObject {
+                schema: Some(SchemaObjectOrReferenceObject::SchemaObject(Box::new(
+                    $req::get_json_schema_definition(),
+                ))),
+                example: None,
+                examples: None,
+                encoding: None,
+            },
+        );
+        $swagger_object.add_route(
+            "POST",
+            String::from($path),
             None,
-            None,
+            Some(RequestBodyObject {
+                description: None,
+                content: content_hash_map,
+                required: Some(true),
+            }),
             vec![(200 as u16, ("", $response::get_json_schema_definition()))],
         )
     };

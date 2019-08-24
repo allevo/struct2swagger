@@ -74,7 +74,7 @@ macro_rules! or_reference {
         #[derive(Serialize, Debug, Clone)]
         #[serde(untagged)]
         pub enum $name {
-            $ty($ty),
+            $ty(Box<$ty>),
             ReferenceObject(ReferenceObject),
         }
     };
@@ -430,10 +430,8 @@ impl SwaggerObject {
         self: &mut Self,
         method: &str,
         path: String,
-        _path_parameter: Option<ParameterObject>,
-        _query_parameter: Option<ParameterObject>,
-        _header_parameter: Option<ParameterObject>,
-        _body_parameter: Option<ParameterObject>,
+        _parameters: Option<Vec<ParameterObject>>,
+        request_body: Option<RequestBodyObject>,
         responses: Vec<(HttpStatusCode, (&str, serde_json::Value))>,
     ) {
         if !self.paths.contains_key(&path) {
@@ -453,26 +451,29 @@ impl SwaggerObject {
                 parameters: None,
             });
         }
-        println!("{:?}", self.paths);
         let path_object = self.paths.get_mut(&path).unwrap();
 
         let mut responses_per_http_status_codes = HashMap::new();
         for (status_code, (description, value)) in responses {
             let mut content_map = HashMap::new();
             content_map.insert("application/json".to_owned(), MediaTypeObject {
-                schema: Some(SchemaObjectOrReferenceObject::SchemaObject(value)),
+                schema: Some(SchemaObjectOrReferenceObject::SchemaObject(Box::new(value))),
                 example: None,
                 examples: None,
                 encoding: None,
             });
-            responses_per_http_status_codes.insert(status_code, ResponseObjectOrReferenceObject::ResponseObject(ResponseObject {
+            responses_per_http_status_codes.insert(status_code, ResponseObjectOrReferenceObject::ResponseObject(Box::new(ResponseObject {
                 description: description.to_owned(),
                 headers: None,
                 content: Some(content_map),
                 links: None,
-            }));
+            })));
         }
 
+        let request_body = match request_body {
+            Some(rq) => Some(RequestBodyObjectOrReferenceObject::RequestBodyObject(Box::new(rq))),
+            None => None,
+        };
         let operation_object = OperationObject {
             responses: ResponsesObject {
                 default: None,
@@ -484,7 +485,7 @@ impl SwaggerObject {
             external_docs: None,
             operation_id: None,
             parameters: None,
-            request_body: None,
+            request_body,
             callbacks: None,
             deprecated: None,
             security: None,
@@ -493,6 +494,7 @@ impl SwaggerObject {
 
         match method {
             "GET" => path_object.get = Some(operation_object),
+            "POST" => path_object.post = Some(operation_object),
             _ => unimplemented!("Unknown method: Send a PR!"),
         }
         
