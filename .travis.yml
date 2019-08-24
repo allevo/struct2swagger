@@ -13,9 +13,11 @@ matrix:
 
 before_script:
   - rustup component add clippy
+  - rustup component add rustfmt
 
 script:
+  - cargo fmt --all -- --check
   # fail when encountering warnings
   - cargo clippy --all-targets --all-features -- -D warnings
   # run tests
-  - cargo test
+  - RUST_BACKTRACE=1 cargo test -- --nocapture

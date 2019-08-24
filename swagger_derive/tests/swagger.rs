@@ -12,10 +12,8 @@ extern crate swagger;
 #[macro_use]
 extern crate swagger_derive;
 
-use swagger::{
-    JsonSchemaDefinition,
-};
 use swagger::swagger_object::SwaggerObject;
+use swagger::JsonSchemaDefinition;
 
 #[derive(Swagger)]
 struct SimpleStruct {
@@ -36,70 +34,84 @@ fn with_response() {
     let stringified = serde_json::to_string(&swagger_object).unwrap();
     let values: serde_json::Value = serde_json::from_str(&stringified).unwrap();
 
-    assert_eq!(values, json!({
-        "openapi": "3.0.0",
-        "info": {
-            "title": TITLE,
-            "version": VERSION,
-        },
-        "paths": {
-            "/": {
-                "get": {
-                    "responses": {
-                        "200": {
-                            "description": DESCRIPTION,
-                            "content": {
-                                "application/json": {
-                                    "schema": SimpleStruct::get_json_schema_definition(),
+    assert_eq!(
+        values,
+        json!({
+            "openapi": "3.0.0",
+            "info": {
+                "title": TITLE,
+                "version": VERSION,
+            },
+            "paths": {
+                "/": {
+                    "get": {
+                        "responses": {
+                            "200": {
+                                "description": DESCRIPTION,
+                                "content": {
+                                    "application/json": {
+                                        "schema": SimpleStruct::get_json_schema_definition(),
+                                    },
                                 },
                             },
                         },
                     },
                 },
             },
-        },
-    }));
+        })
+    );
 }
-
 
 #[test]
 fn with_body() {
     let mut swagger_object = SwaggerObject::new(TITLE, VERSION);
 
-    swagger_add_router!(swagger_object, "POST", "/", "request_body", SimpleStruct, 200, DESCRIPTION, SimpleStruct);
+    swagger_add_router!(
+        swagger_object,
+        "POST",
+        "/",
+        "request_body",
+        SimpleStruct,
+        200,
+        DESCRIPTION,
+        SimpleStruct
+    );
 
     let stringified = serde_json::to_string(&swagger_object).unwrap();
     let values: serde_json::Value = serde_json::from_str(&stringified).unwrap();
 
-    assert_eq!(values, json!({
-        "openapi": "3.0.0",
-        "info": {
-            "title": TITLE,
-            "version": VERSION,
-        },
-        "paths": {
-            "/": {
-                "post": {
-                    "requestBody": {
-                        "content": {
-                            "application/json": {
-                                "schema": SimpleStruct::get_json_schema_definition(),
-                            },
-                        },
-                        "required":true,
-                    },
-                    "responses": {
-                        "200": {
-                            "description": DESCRIPTION,
+    assert_eq!(
+        values,
+        json!({
+            "openapi": "3.0.0",
+            "info": {
+                "title": TITLE,
+                "version": VERSION,
+            },
+            "paths": {
+                "/": {
+                    "post": {
+                        "requestBody": {
                             "content": {
                                 "application/json": {
                                     "schema": SimpleStruct::get_json_schema_definition(),
+                                },
+                            },
+                            "required":true,
+                        },
+                        "responses": {
+                            "200": {
+                                "description": DESCRIPTION,
+                                "content": {
+                                    "application/json": {
+                                        "schema": SimpleStruct::get_json_schema_definition(),
+                                    },
                                 },
                             },
                         },
                     },
                 },
             },
-        },
-    }));
+        })
+    );
 }

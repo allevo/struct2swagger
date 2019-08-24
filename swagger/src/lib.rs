@@ -32,47 +32,47 @@ pub trait QueryDefinition {
 
 #[macro_export]
 macro_rules! swagger_add_router {
-    ($swagger_object:expr, "GET", $path:literal, 200, $description: expr, $response:ident) => {
-        {
-            $swagger_object.add_route(
-                "GET",
-                String::from($path),
-                None,
-                None,
-                vec![(200 as u16, ($description, $response::get_json_schema_definition()))],
-            )
-        }
-    };
-    ($swagger_object:expr, "POST", $path:literal, "request_body", $req: ident, 200, $description: expr, $response:ident) => {
-        {
-            use swagger::swagger_object::{
-                MediaTypeObject,
-                RequestBodyObject,
-                SchemaObjectOrReferenceObject,
-            };
-            let mut content_hash_map = HashMap::new();
-            content_hash_map.insert(
-                "application/json".to_owned(),
-                MediaTypeObject {
-                    schema: Some(SchemaObjectOrReferenceObject::SchemaObject(Box::new(
-                        $req::get_json_schema_definition(),
-                    ))),
-                    example: None,
-                    examples: None,
-                    encoding: None,
-                },
-            );
-            $swagger_object.add_route(
-                "POST",
-                String::from($path),
-                None,
-                Some(RequestBodyObject {
-                    description: None,
-                    content: content_hash_map,
-                    required: Some(true),
-                }),
-                vec![(200 as u16, ($description, $response::get_json_schema_definition()))],
-            )
-        }
-    };
+    ($swagger_object:expr, "GET", $path:literal, 200, $description: expr, $response:ident) => {{
+        $swagger_object.add_route(
+            "GET",
+            String::from($path),
+            None,
+            None,
+            vec![(
+                200 as u16,
+                ($description, $response::get_json_schema_definition()),
+            )],
+        )
+    }};
+    ($swagger_object:expr, "POST", $path:literal, "request_body", $req: ident, 200, $description: expr, $response:ident) => {{
+        use swagger::swagger_object::{
+            MediaTypeObject, RequestBodyObject, SchemaObjectOrReferenceObject,
+        };
+        let mut content_hash_map = HashMap::new();
+        content_hash_map.insert(
+            "application/json".to_owned(),
+            MediaTypeObject {
+                schema: Some(SchemaObjectOrReferenceObject::SchemaObject(Box::new(
+                    $req::get_json_schema_definition(),
+                ))),
+                example: None,
+                examples: None,
+                encoding: None,
+            },
+        );
+        $swagger_object.add_route(
+            "POST",
+            String::from($path),
+            None,
+            Some(RequestBodyObject {
+                description: None,
+                content: content_hash_map,
+                required: Some(true),
+            }),
+            vec![(
+                200 as u16,
+                ($description, $response::get_json_schema_definition()),
+            )],
+        )
+    }};
 }
