@@ -531,6 +531,9 @@ impl SwaggerObject {
         match method {
             "GET" => path_object.get = Some(operation_object),
             "POST" => path_object.post = Some(operation_object),
+            "PATCH" => path_object.patch = Some(operation_object),
+            "DELETE" => path_object.delete = Some(operation_object),
+            "PUT" => path_object.put = Some(operation_object),
             _ => unimplemented!("Unknown method: Send a PR!"),
         }
     }

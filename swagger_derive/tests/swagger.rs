@@ -115,3 +115,150 @@ fn with_body() {
         })
     );
 }
+
+#[test]
+fn many_methods() {
+    let mut swagger_object = SwaggerObject::new(TITLE, VERSION);
+
+    swagger_add_router!(swagger_object, "GET", "/", 200, DESCRIPTION, SimpleStruct);
+    swagger_add_router!(
+        swagger_object,
+        "POST",
+        "/",
+        "request_body",
+        SimpleStruct,
+        200,
+        DESCRIPTION,
+        SimpleStruct
+    );
+    swagger_add_router!(
+        swagger_object,
+        "PATCH",
+        "/",
+        "request_body",
+        SimpleStruct,
+        200,
+        DESCRIPTION,
+        SimpleStruct
+    );
+    swagger_add_router!(
+        swagger_object,
+        "DELETE",
+        "/",
+        200,
+        DESCRIPTION,
+        SimpleStruct
+    );
+    swagger_add_router!(
+        swagger_object,
+        "PUT",
+        "/",
+        "request_body",
+        SimpleStruct,
+        200,
+        DESCRIPTION,
+        SimpleStruct
+    );
+
+    let stringified = serde_json::to_string(&swagger_object).unwrap();
+    let values: serde_json::Value = serde_json::from_str(&stringified).unwrap();
+
+    assert_eq!(
+        values,
+        json!({
+            "openapi": "3.0.0",
+            "info": {
+                "title": TITLE,
+                "version": VERSION,
+            },
+            "paths": {
+                "/": {
+                    "post": {
+                        "requestBody": {
+                            "content": {
+                                "application/json": {
+                                    "schema": SimpleStruct::get_json_schema_definition(),
+                                },
+                            },
+                            "required":true,
+                        },
+                        "responses": {
+                            "200": {
+                                "description": DESCRIPTION,
+                                "content": {
+                                    "application/json": {
+                                        "schema": SimpleStruct::get_json_schema_definition(),
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "patch": {
+                        "requestBody": {
+                            "content": {
+                                "application/json": {
+                                    "schema": SimpleStruct::get_json_schema_definition(),
+                                },
+                            },
+                            "required":true,
+                        },
+                        "responses": {
+                            "200": {
+                                "description": DESCRIPTION,
+                                "content": {
+                                    "application/json": {
+                                        "schema": SimpleStruct::get_json_schema_definition(),
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "put": {
+                        "requestBody": {
+                            "content": {
+                                "application/json": {
+                                    "schema": SimpleStruct::get_json_schema_definition(),
+                                },
+                            },
+                            "required":true,
+                        },
+                        "responses": {
+                            "200": {
+                                "description": DESCRIPTION,
+                                "content": {
+                                    "application/json": {
+                                        "schema": SimpleStruct::get_json_schema_definition(),
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "get": {
+                        "responses": {
+                            "200": {
+                                "description": DESCRIPTION,
+                                "content": {
+                                    "application/json": {
+                                        "schema": SimpleStruct::get_json_schema_definition(),
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "delete": {
+                        "responses": {
+                            "200": {
+                                "description": DESCRIPTION,
+                                "content": {
+                                    "application/json": {
+                                        "schema": SimpleStruct::get_json_schema_definition(),
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        })
+    );
+}

@@ -44,7 +44,19 @@ macro_rules! swagger_add_router {
             )],
         )
     }};
-    ($swagger_object:expr, "POST", $path:literal, "request_body", $req: ident, 200, $description: expr, $response:ident) => {{
+    ($swagger_object:expr, "DELETE", $path:literal, 200, $description: expr, $response:ident) => {{
+        $swagger_object.add_route(
+            "DELETE",
+            String::from($path),
+            None,
+            None,
+            vec![(
+                200 as u16,
+                ($description, $response::get_json_schema_definition()),
+            )],
+        )
+    }};
+    ($swagger_object:expr, $method:literal, $path:literal, "request_body", $req: ident, 200, $description: expr, $response:ident) => {{
         use swagger::swagger_object::{
             MediaTypeObject, RequestBodyObject, SchemaObjectOrReferenceObject,
         };
@@ -61,7 +73,7 @@ macro_rules! swagger_add_router {
             },
         );
         $swagger_object.add_route(
-            "POST",
+            $method,
             String::from($path),
             None,
             Some(RequestBodyObject {
