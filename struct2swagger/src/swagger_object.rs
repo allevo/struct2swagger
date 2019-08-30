@@ -166,7 +166,7 @@ pub struct OperationObject {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub operation_id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub parameters: Option<ParameterObjectOrReferenceObject>,
+    pub parameters: Option<Vec<ParameterObjectOrReferenceObject>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub request_body: Option<RequestBodyObjectOrReferenceObject>,
     responses: ResponsesObject,
@@ -188,7 +188,7 @@ pub struct ExternalDocumentationObject {
 }
 
 #[derive(Clone, Serialize, Debug)]
-#[serde(rename_all = "lowercase", untagged)]
+#[serde(rename_all = "lowercase")]
 pub enum ParameterIn {
     Query,
     Header,
@@ -200,7 +200,8 @@ pub enum ParameterIn {
 #[serde(rename_all = "camelCase")]
 pub struct ParameterObject {
     pub name: String,
-    pub r#in: ParameterIn,
+    #[serde(rename = "in")]
+    pub where_in: ParameterIn,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -209,6 +210,8 @@ pub struct ParameterObject {
     pub deprecated: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub allow_empty_value: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub schema: Option<SchemaObjectOrReferenceObject>,
 }
 
 #[derive(Serialize, Debug, Clone)]
@@ -455,7 +458,7 @@ impl SwaggerObject {
         self: &mut Self,
         method: &str,
         path: String,
-        _parameters: Option<Vec<ParameterObject>>,
+        parameters: Option<Vec<ParameterObjectOrReferenceObject>>,
         request_body: Option<RequestBodyObject>,
         responses: Vec<(HttpStatusCode, (&str, serde_json::Value))>,
     ) {
@@ -520,7 +523,7 @@ impl SwaggerObject {
             description: None,
             external_docs: None,
             operation_id: None,
-            parameters: None,
+            parameters,
             request_body,
             callbacks: None,
             deprecated: None,

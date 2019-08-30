@@ -13,7 +13,7 @@ extern crate struct2swagger;
 #[macro_use]
 extern crate struct2swagger_derive;
 
-use struct2swagger::JsonSchemaDefinition;
+use struct2swagger::{JsonSchemaDefinition, QueryDefinition};
 
 #[test]
 fn test_1() {

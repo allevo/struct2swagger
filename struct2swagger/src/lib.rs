@@ -22,16 +22,38 @@ struct Field {
 }
 
 pub use impl_swagger_trait::implements_swagger_trait;
+pub use swagger_object::{ParameterIn, ParameterObject};
 
 pub trait JsonSchemaDefinition {
     fn get_json_schema_definition() -> serde_json::Value;
 }
 pub trait QueryDefinition {
-    fn get_query_definition() -> serde_json::Value;
+    fn get_query_definitions() -> Vec<ParameterObject>;
 }
 
 #[macro_export]
 macro_rules! swagger_add_router {
+    ($swagger_object:expr, "GET", $path:literal, $query_params: ident, 200, $description: expr, $response:ident) => {{
+        $swagger_object.add_route(
+            "GET",
+            String::from($path),
+            Some(
+                <$query_params>::get_query_definitions()
+                    .into_iter()
+                    .map(|p| {
+                        $crate::swagger_object::ParameterObjectOrReferenceObject::ParameterObject(
+                            Box::new(p),
+                        )
+                    })
+                    .collect(),
+            ),
+            None,
+            vec![(
+                200 as u16,
+                ($description, $response::get_json_schema_definition()),
+            )],
+        )
+    }};
     ($swagger_object:expr, "GET", $path:literal, 200, $description: expr, $response:ident) => {{
         $swagger_object.add_route(
             "GET",

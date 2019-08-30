@@ -13,7 +13,7 @@ extern crate struct2swagger;
 extern crate struct2swagger_derive;
 
 use struct2swagger::swagger_object::SwaggerObject;
-use struct2swagger::JsonSchemaDefinition;
+use struct2swagger::{JsonSchemaDefinition, QueryDefinition};
 
 #[derive(Swagger)]
 struct SimpleStruct {
@@ -99,6 +99,65 @@ fn with_body() {
                             },
                             "required":true,
                         },
+                        "responses": {
+                            "200": {
+                                "description": DESCRIPTION,
+                                "content": {
+                                    "application/json": {
+                                        "schema": SimpleStruct::get_json_schema_definition(),
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        })
+    );
+}
+
+#[test]
+fn with_query_string() {
+    let mut swagger_object = SwaggerObject::new(TITLE, VERSION);
+
+    swagger_add_router!(
+        swagger_object,
+        "GET",
+        "/",
+        SimpleStruct,
+        200,
+        DESCRIPTION,
+        SimpleStruct
+    );
+
+    let stringified = serde_json::to_string(&swagger_object).unwrap();
+    let values: serde_json::Value = serde_json::from_str(&stringified).unwrap();
+
+    assert_eq!(
+        values,
+        json!({
+            "openapi": "3.0.0",
+            "info": {
+                "title": TITLE,
+                "version": VERSION,
+            },
+            "paths": {
+                "/": {
+                    "get": {
+                        "parameters": [
+                            {
+                                "name": "val1",
+                                "in": "query",
+                                "required": true,
+                                "schema": <u8>::get_json_schema_definition(),
+                            },
+                            {
+                                "name": "val2",
+                                "in": "query",
+                                "required": true,
+                                "schema": String::get_json_schema_definition(),
+                            },
+                        ],
                         "responses": {
                             "200": {
                                 "description": DESCRIPTION,

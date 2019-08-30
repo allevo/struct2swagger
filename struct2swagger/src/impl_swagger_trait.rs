@@ -59,7 +59,7 @@ fn get_json_schema_definition(
         properties.push(TokenTree::Punct(Punct::new('>', Spacing::Alone)));
 
         properties.push(TokenTree::Punct(Punct::new(':', Spacing::Joint)));
-        properties.push(TokenTree::Punct(Punct::new(':', Spacing::Joint)));
+        properties.push(TokenTree::Punct(Punct::new(':', Spacing::Alone)));
 
         properties.push(TokenTree::Ident(Ident::new(
             "get_json_schema_definition",
@@ -93,12 +93,190 @@ fn get_json_schema_definition(
     (required_properties, tokens)
 }
 
+fn get_query_definitions(fields: &[Field]) -> proc_macro2::TokenStream {
+    let mut query: Vec<TokenTree> = Vec::new();
+
+    for field in fields {
+        query.push(TokenTree::Ident(Ident::new(
+            "struct2swagger",
+            Span::call_site(),
+        )));
+        query.push(TokenTree::Punct(Punct::new(':', Spacing::Joint)));
+        query.push(TokenTree::Punct(Punct::new(':', Spacing::Alone)));
+        query.push(TokenTree::Ident(Ident::new(
+            "ParameterObject",
+            Span::call_site(),
+        )));
+
+        let mut query_field_description = Vec::<TokenTree>::new();
+
+        query_field_description.push(TokenTree::Ident(Ident::new("name", Span::call_site())));
+        query_field_description.push(TokenTree::Punct(Punct::new(':', Spacing::Alone)));
+        query_field_description.push(TokenTree::Literal(Literal::string(&field.name)));
+        query_field_description.push(TokenTree::Punct(Punct::new('.', Spacing::Alone)));
+        query_field_description.push(TokenTree::Ident(Ident::new("to_string", Span::call_site())));
+        query_field_description.push(TokenTree::Group(Group::new(
+            Delimiter::Parenthesis,
+            TokenStream::new(),
+        )));
+        query_field_description.push(TokenTree::Punct(Punct::new(',', Spacing::Alone)));
+
+        query_field_description.push(TokenTree::Ident(Ident::new("where_in", Span::call_site())));
+        query_field_description.push(TokenTree::Punct(Punct::new(':', Spacing::Alone)));
+        query_field_description.push(TokenTree::Ident(Ident::new(
+            "struct2swagger",
+            Span::call_site(),
+        )));
+        query_field_description.push(TokenTree::Punct(Punct::new(':', Spacing::Joint)));
+        query_field_description.push(TokenTree::Punct(Punct::new(':', Spacing::Alone)));
+        query_field_description.push(TokenTree::Ident(Ident::new(
+            "ParameterIn",
+            Span::call_site(),
+        )));
+        query_field_description.push(TokenTree::Punct(Punct::new(':', Spacing::Joint)));
+        query_field_description.push(TokenTree::Punct(Punct::new(':', Spacing::Alone)));
+        query_field_description.push(TokenTree::Ident(Ident::new("Query", Span::call_site())));
+        query_field_description.push(TokenTree::Punct(Punct::new(',', Spacing::Alone)));
+
+        query_field_description.push(TokenTree::Ident(Ident::new(
+            "description",
+            Span::call_site(),
+        )));
+        query_field_description.push(TokenTree::Punct(Punct::new(':', Spacing::Alone)));
+        query_field_description.push(TokenTree::Ident(Ident::new("None", Span::call_site())));
+        query_field_description.push(TokenTree::Punct(Punct::new(',', Spacing::Alone)));
+
+        query_field_description.push(TokenTree::Ident(Ident::new("required", Span::call_site())));
+        query_field_description.push(TokenTree::Punct(Punct::new(':', Spacing::Alone)));
+        query_field_description.push(TokenTree::Ident(Ident::new("Some", Span::call_site())));
+        let required = {
+            let mut required = Vec::new();
+            let is_required = if contains_option(&field.ty) {
+                "false"
+            } else {
+                "true"
+            };
+            required.push(TokenTree::Ident(Ident::new(is_required, Span::call_site())));
+            proc_macro2::TokenStream::from_iter(required.into_iter())
+        };
+        query_field_description.push(TokenTree::Group(Group::new(
+            Delimiter::Parenthesis,
+            required,
+        )));
+        query_field_description.push(TokenTree::Punct(Punct::new(',', Spacing::Alone)));
+
+        query_field_description.push(TokenTree::Ident(Ident::new(
+            "deprecated",
+            Span::call_site(),
+        )));
+        query_field_description.push(TokenTree::Punct(Punct::new(':', Spacing::Alone)));
+        query_field_description.push(TokenTree::Ident(Ident::new("None", Span::call_site())));
+        query_field_description.push(TokenTree::Punct(Punct::new(',', Spacing::Alone)));
+
+        query_field_description.push(TokenTree::Ident(Ident::new(
+            "allow_empty_value",
+            Span::call_site(),
+        )));
+        query_field_description.push(TokenTree::Punct(Punct::new(':', Spacing::Alone)));
+        query_field_description.push(TokenTree::Ident(Ident::new("None", Span::call_site())));
+        query_field_description.push(TokenTree::Punct(Punct::new(',', Spacing::Alone)));
+
+        query_field_description.push(TokenTree::Ident(Ident::new("schema", Span::call_site())));
+        query_field_description.push(TokenTree::Punct(Punct::new(':', Spacing::Alone)));
+        query_field_description.push(TokenTree::Ident(Ident::new("Some", Span::call_site())));
+        let schema_or_ref = {
+            let mut schema_or_ref = Vec::new();
+            schema_or_ref.push(TokenTree::Ident(Ident::new(
+                "struct2swagger",
+                Span::call_site(),
+            )));
+            schema_or_ref.push(TokenTree::Punct(Punct::new(':', Spacing::Joint)));
+            schema_or_ref.push(TokenTree::Punct(Punct::new(':', Spacing::Alone)));
+            schema_or_ref.push(TokenTree::Ident(Ident::new(
+                "swagger_object",
+                Span::call_site(),
+            )));
+            schema_or_ref.push(TokenTree::Punct(Punct::new(':', Spacing::Joint)));
+            schema_or_ref.push(TokenTree::Punct(Punct::new(':', Spacing::Alone)));
+            schema_or_ref.push(TokenTree::Ident(Ident::new(
+                "SchemaObjectOrReferenceObject",
+                Span::call_site(),
+            )));
+            schema_or_ref.push(TokenTree::Punct(Punct::new(':', Spacing::Joint)));
+            schema_or_ref.push(TokenTree::Punct(Punct::new(':', Spacing::Alone)));
+            schema_or_ref.push(TokenTree::Ident(Ident::new(
+                "SchemaObject",
+                Span::call_site(),
+            )));
+
+            let boxed = {
+                let mut boxed = Vec::new();
+
+                boxed.push(TokenTree::Ident(Ident::new("Box", Span::call_site())));
+                boxed.push(TokenTree::Punct(Punct::new(':', Spacing::Joint)));
+                boxed.push(TokenTree::Punct(Punct::new(':', Spacing::Alone)));
+                boxed.push(TokenTree::Ident(Ident::new("new", Span::call_site())));
+
+                let query_field_definition = {
+                    let mut query_field_definition = Vec::new();
+                    query_field_definition.push(TokenTree::Punct(Punct::new('<', Spacing::Alone)));
+                    query_field_definition.append(&mut field.ty.clone());
+                    query_field_definition.push(TokenTree::Punct(Punct::new('>', Spacing::Alone)));
+                    query_field_definition.push(TokenTree::Punct(Punct::new(':', Spacing::Joint)));
+                    query_field_definition.push(TokenTree::Punct(Punct::new(':', Spacing::Alone)));
+                    query_field_definition.push(TokenTree::Ident(Ident::new(
+                        "get_json_schema_definition",
+                        Span::call_site(),
+                    )));
+                    query_field_definition.push(TokenTree::Group(Group::new(
+                        Delimiter::Parenthesis,
+                        proc_macro2::TokenStream::new(),
+                    )));
+
+                    proc_macro2::TokenStream::from_iter(query_field_definition.into_iter())
+                };
+
+                boxed.push(TokenTree::Group(Group::new(
+                    Delimiter::Parenthesis,
+                    query_field_definition,
+                )));
+
+                proc_macro2::TokenStream::from_iter(boxed.into_iter())
+            };
+
+            schema_or_ref.push(TokenTree::Group(Group::new(Delimiter::Parenthesis, boxed)));
+
+            proc_macro2::TokenStream::from_iter(schema_or_ref.into_iter())
+        };
+
+        query_field_description.push(TokenTree::Group(Group::new(
+            Delimiter::Parenthesis,
+            schema_or_ref,
+        )));
+
+        query_field_description.push(TokenTree::Punct(Punct::new(',', Spacing::Alone)));
+
+        let query_field_description =
+            proc_macro2::TokenStream::from_iter(query_field_description.into_iter());
+
+        query.push(TokenTree::Group(Group::new(
+            Delimiter::Brace,
+            query_field_description,
+        )));
+        query.push(TokenTree::Punct(Punct::new(',', Spacing::Alone)));
+    }
+
+    proc_macro2::TokenStream::from_iter(query.into_iter())
+}
+
 pub fn implements_swagger_trait(input: proc_macro2::TokenStream) -> proc_macro2::TokenStream {
     let ast = syn::parse2(input.clone()).unwrap();
     let struct_name = get_struct_name(&ast);
     let fields = get_fields(&ast);
 
     let (required_properties, tokens) = get_json_schema_definition(&fields);
+
+    let query_params = get_query_definitions(&fields);
 
     let struct_name_ident = TokenTree::Ident(Ident::new(&struct_name, Span::call_site()));
 
@@ -110,6 +288,15 @@ pub fn implements_swagger_trait(input: proc_macro2::TokenStream) -> proc_macro2:
                     "required": [ #required_properties ],
                     "properties": #tokens,
                 })
+            }
+        }
+
+
+        impl QueryDefinition for #struct_name_ident {
+            fn get_query_definitions() -> Vec<struct2swagger::ParameterObject> {
+                vec![
+                    #query_params
+                ]
             }
         }
     }
