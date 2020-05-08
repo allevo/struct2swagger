@@ -244,3 +244,47 @@ fn struct_with_struct() {
         })
     );
 }
+
+#[derive(Swagger)]
+struct StructWithAllOption {
+    val1: Option<u8>,
+    val2: Option<String>,
+}
+
+#[test]
+fn struct_with_all_option() {
+    let t = StructWithAllOption::get_json_schema_definition();
+
+    assert_eq!(
+        t,
+        json!({
+            "properties": {
+                "val1": {
+                    "maximum":255,
+                    "minimum":0,
+                    "type":"integer",
+                },
+                "val2": {
+                    "type": "string",
+                },
+            },
+            "type":"object",
+        })
+    );
+}
+
+#[derive(Swagger)]
+struct EmptyStruct {}
+
+#[test]
+fn empty_struct() {
+    let t = EmptyStruct::get_json_schema_definition();
+
+    assert_eq!(
+        t,
+        json!({
+            "properties": {},
+            "type":"object",
+        })
+    );
+}

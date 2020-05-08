@@ -17,6 +17,6 @@ proc-macro = true
 
 [dependencies]
 proc-macro2 = "1.0.1"
-struct2swagger = "0.1.0"
+struct2swagger = { path = "../struct2swagger", veresion = "0.1.0" }
 serde_json = "1.0.40"
 quote = "1.0.2"

@@ -270,7 +270,7 @@ fn get_query_definitions(fields: &[Field]) -> proc_macro2::TokenStream {
 }
 
 pub fn implements_swagger_trait(input: proc_macro2::TokenStream) -> proc_macro2::TokenStream {
-    let ast = syn::parse2(input.clone()).unwrap();
+    let ast = syn::parse2(input).unwrap();
     let struct_name = get_struct_name(&ast);
     let fields = get_fields(&ast);
 
@@ -280,18 +280,7 @@ pub fn implements_swagger_trait(input: proc_macro2::TokenStream) -> proc_macro2:
 
     let struct_name_ident = TokenTree::Ident(Ident::new(&struct_name, Span::call_site()));
 
-    quote! {
-        impl JsonSchemaDefinition for #struct_name_ident {
-            fn get_json_schema_definition() -> serde_json::Value {
-                json!({
-                    "type": "object",
-                    "required": [ #required_properties ],
-                    "properties": #tokens,
-                })
-            }
-        }
-
-
+    let query_definition_quote = quote! {
         impl QueryDefinition for #struct_name_ident {
             fn get_query_definitions() -> Vec<struct2swagger::ParameterObject> {
                 vec![
@@ -299,5 +288,35 @@ pub fn implements_swagger_trait(input: proc_macro2::TokenStream) -> proc_macro2:
                 ]
             }
         }
+    };
+    let json_schema_definition_quote;
+    if required_properties.is_empty() {
+        json_schema_definition_quote = quote! {
+            impl JsonSchemaDefinition for #struct_name_ident {
+                fn get_json_schema_definition() -> serde_json::Value {
+                    json!({
+                        "type": "object",
+                        "properties": #tokens,
+                    })
+                }
+            }
+        }
+    } else {
+        json_schema_definition_quote = quote! {
+            impl JsonSchemaDefinition for #struct_name_ident {
+                fn get_json_schema_definition() -> serde_json::Value {
+                    json!({
+                        "type": "object",
+                        "required": [ #required_properties ],
+                        "properties": #tokens,
+                    })
+                }
+            }
+        }
+    }
+
+    quote! {
+        #json_schema_definition_quote
+        #query_definition_quote
     }
 }
