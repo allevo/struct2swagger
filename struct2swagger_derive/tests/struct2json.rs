@@ -27,7 +27,7 @@ fn test_1() {
 
     let s = q.to_string();
 
-    assert_eq!(s, "a :: gg ( ) ;");
+    assert_eq!(s, "a :: gg () ;");
 }
 
 #[test]
@@ -50,7 +50,7 @@ fn test_2() {
     };
     let s = q.to_string();
 
-    assert_eq!(s, "impl JsonSchemaDefinition for MyStructName { fn get_json_schema_definition ( ) -> serde_json :: Value { json ! ( { } ) ; } }");
+    assert_eq!(s, "impl JsonSchemaDefinition for MyStructName { fn get_json_schema_definition () -> serde_json :: Value { json ! ( { } ) ; } }");
 }
 
 #[test]
