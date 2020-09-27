@@ -1,4 +1,4 @@
-# struct2swagger
+# struct2swagger [![Build Status](https://travis-ci.org/allevo/struct2swagger.svg?branch=master)](https://travis-ci.org/allevo/struct2swagger)
 
 Utilities for generating OpenAPI Specification from your structures
 
