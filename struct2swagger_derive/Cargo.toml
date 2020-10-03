@@ -1,13 +1,13 @@
 [package]
 name = "struct2swagger_derive"
-version = "0.1.4"
+version = "0.1.5"
 authors = ["Tommaso Allevi <tomallevi@gmail.com>"]
 edition = "2018"
 description = "Create Swagger OpenApi3 from your structs"
 repository = "https://github.com/allevo/struct2swagger"
 readme = "../README.md"
 keywords = ["swagger", "openapi", "openapi3"]
-categories = ["HTTP server"]
+categories = ["web-programming"]
 license = "MIT"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -17,6 +17,6 @@ proc-macro = true
 
 [dependencies]
 proc-macro2 = "1.0.1"
-struct2swagger = { path = "../struct2swagger", version = "0.1.4" }
+struct2swagger = { path = "../struct2swagger", version = "0.1.5" }
 serde_json = "1.0.40"
 quote = "1.0.2"
