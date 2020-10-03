@@ -1,6 +1,6 @@
 [package]
 name = "struct2swagger"
-version = "0.1.3"
+version = "0.1.4"
 authors = ["Tommaso Allevi <tomallevi@gmail.com>"]
 edition = "2018"
 description = "Create Swagger OpenApi3 from your structs"
