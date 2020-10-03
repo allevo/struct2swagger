@@ -281,7 +281,7 @@ pub fn implements_swagger_trait(input: proc_macro2::TokenStream) -> proc_macro2:
     let struct_name_ident = TokenTree::Ident(Ident::new(&struct_name, Span::call_site()));
 
     let query_definition_quote = quote! {
-        impl QueryDefinition for #struct_name_ident {
+        impl struct2swagger::QueryDefinition for #struct_name_ident {
             fn get_query_definitions() -> Vec<struct2swagger::ParameterObject> {
                 vec![
                     #query_params
@@ -292,7 +292,7 @@ pub fn implements_swagger_trait(input: proc_macro2::TokenStream) -> proc_macro2:
     let json_schema_definition_quote;
     if required_properties.is_empty() {
         json_schema_definition_quote = quote! {
-            impl JsonSchemaDefinition for #struct_name_ident {
+            impl struct2swagger::JsonSchemaDefinition for #struct_name_ident {
                 fn get_json_schema_definition() -> serde_json::Value {
                     json!({
                         "type": "object",
@@ -303,7 +303,7 @@ pub fn implements_swagger_trait(input: proc_macro2::TokenStream) -> proc_macro2:
         }
     } else {
         json_schema_definition_quote = quote! {
-            impl JsonSchemaDefinition for #struct_name_ident {
+            impl struct2swagger::JsonSchemaDefinition for #struct_name_ident {
                 fn get_json_schema_definition() -> serde_json::Value {
                     json!({
                         "type": "object",

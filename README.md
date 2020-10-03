@@ -10,6 +10,13 @@ cargo add struct2swagger_derive struct2swagger
 ## Usage
 
 ```rust
+
+
+#[macro_use]
+extern crate struct2swagger_derive;
+#[macro_use]
+extern crate serde_json;
+
 use struct2swagger::{JsonSchemaDefinition, QueryDefinition, swagger_object::SwaggerObject};
 use serde_json::Result;
 
