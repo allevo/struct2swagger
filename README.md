@@ -11,9 +11,10 @@ cargo add struct2swagger_derive struct2swagger
 
 ```rust
 
-
 #[macro_use]
 extern crate struct2swagger_derive;
+#[macro_use]
+extern crate struct2swagger;
 #[macro_use]
 extern crate serde_json;
 
@@ -29,7 +30,7 @@ pub struct HelloWorldResponse {
     pub say: String,
 }
 
-fn get_openapi_spec(): String {
+fn get_openapi_spec() -> String {
   let mut swagger_object = SwaggerObject::new(
     "the webserver name", // title
     "1.0.0" // version
